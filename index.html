@@ -1,119 +1,337 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WebView2 Performance Test Page</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:Microsoft YaHei;padding:24px;background:#f0f4f8;color:#222;}
-.container{max-width:1100px;margin:0 auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 2px 12px #00000015;}
-h1{color:#1f4e96;margin-bottom:16px;}
-.info{padding:14px;background:#eef5ff;border-left:4px solid #2b7cd3;margin:16px 0;border-radius:4px;}
-table{width:100%;border-collapse:collapse;margin:20px 0;}
-td,th{border:1px solid #ddd;padding:10px;text-align:center;}
-th{background:#e8f0fe;}
-.box-row{display:flex;gap:12px;margin:20px 0;flex-wrap:wrap;}
-.box{width:120px;height:120px;border-radius:8px;transition:0.3s;background:#cccccc;}
-.stats{margin-top:20px;font-size:14px;color:#555;}
-#startBtn{
-    padding:12px 24px;
-    font-size:16px;
-    background:#2b7cd3;
-    color:#fff;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-}
-#startBtn:hover{background:#2068b6;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>浏览器版本检测 · 开始测试</title>
+  <style>
+    /* 干净现代的样式，柔和渐变背景 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(145deg, #f6f9fc 0%, #e6f0f5 100%);
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 2rem;
+      padding: 2.5rem 2rem;
+      max-width: 550px;
+      width: 100%;
+      box-shadow: 0 25px 40px -12px rgba(0, 30, 50, 0.25),
+                  inset 0 1px 2px rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transition: transform 0.2s ease;
+      text-align: center;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #1a3e4c;
+      margin-bottom: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    h1 span {
+      background: #1a3e4c;
+      color: white;
+      font-size: 1rem;
+      padding: 0.2rem 0.8rem;
+      border-radius: 40px;
+      font-weight: 400;
+      opacity: 0.7;
+    }
+
+    /* 浏览器信息显示区 */
+    .browser-box {
+      background: #ffffffdd;
+      backdrop-filter: blur(4px);
+      border-radius: 2rem;
+      padding: 1.5rem 1rem;
+      margin-bottom: 2.2rem;
+      border: 1px solid rgba(110, 150, 170, 0.2);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.02), 0 6px 12px -8px rgba(0,40,60,0.2);
+    }
+
+    .label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6b8d9c;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+    }
+
+    .browser-name {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0d2f3f;
+      line-height: 1.2;
+      word-break: break-word;
+      margin-bottom: 0.3rem;
+    }
+
+    .browser-version {
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: #2d5a6e;
+      background: #d9eaf1;
+      display: inline-block;
+      padding: 0.35rem 1.2rem;
+      border-radius: 40px;
+      letter-spacing: 0.01em;
+      box-shadow: inset 0 1px 4px rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.05);
+      margin-top: 0.4rem;
+    }
+
+    /* 按钮区域 */
+    .actions {
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn-start {
+      background: #1f5e77;
+      border: none;
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 500;
+      padding: 1rem 2.8rem;
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow: 0 12px 18px -8px rgba(18, 67, 87, 0.4),
+                  inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      letter-spacing: 0.3px;
+      border: 1px solid #38829e;
+      text-decoration: none; /* 防止意外链接样式 */
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    .btn-start:hover {
+      background: #27738f;
+      box-shadow: 0 18px 24px -10px #1e4f62;
+      transform: scale(1.02);
+    }
+
+    .btn-start:active {
+      transform: scale(0.98);
+      box-shadow: 0 6px 12px -6px #0a2c3b;
+      background: #195a72;
+    }
+
+    /* 小提示文字 */
+    .footnote {
+      margin-top: 2rem;
+      font-size: 0.75rem;
+      color: #7f9aa8;
+      letter-spacing: 0.02em;
+      border-top: 1px dashed #b8d0db;
+      padding-top: 1.2rem;
+    }
+
+    /* 针对手机优化 */
+    @media (max-width: 450px) {
+      .card {
+        padding: 1.8rem 1.2rem;
+      }
+      .browser-name {
+        font-size: 1.6rem;
+      }
+      .browser-version {
+        font-size: 1rem;
+        padding: 0.25rem 1rem;
+      }
+      .btn-start {
+        font-size: 1.1rem;
+        padding: 0.9rem 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-    <h1>WebView2 持续动态压力测试页</h1>
-    <div class="info">
-        <p>✅ GitHub Pages 兼容 | 点击按钮启动动画</p>
-        <p>初始化耗时：<span id="pageTime">0</span></p>
-        <p>FPS：<span id="fps">0</span></p>
+  <div class="card">
+    <h1>
+      🌐 浏览器信息
+      <span>检测</span>
+    </h1>
+
+    <!-- 浏览器信息展示区域 -->
+    <div class="browser-box">
+      <div class="label">你正在使用</div>
+      <div class="browser-name" id="browserName">检测中…</div>
+      <div class="browser-version" id="browserVersion">版本获取中</div>
     </div>
 
-    <button id="startBtn">开始压力测试</button>
-
-    <table>
-        <tr><th>项目</th><th>数据A</th><th>数据B</th><th>数据C</th></tr>
-        <tr><td>测试项1</td><td>123</td><td>456</td><td>789</td></tr>
-        <tr><td>测试项2</td><td>333</td><td>666</td><td>999</td></tr>
-        <tr><td>测试项3</td><td>111</td><td>222</td><td>555</td></tr>
-    </table>
-
-    <div class="box-row" id="boxContainer"></div>
-
-    <div class="stats">
-        JS计算结果：<span id="calcResult"></span>
+    <!-- 按钮：跳转到 test.html -->
+    <div class="actions">
+      <!-- 使用 button 并绑定点击事件，也可以使用 <a> 标签，但这里用 button + JS 确保跳转并保留样式一致性 -->
+      <button class="btn-start" id="startTestBtn" type="button">
+        ⚡ 开始测试 → test.html
+      </button>
     </div>
-</div>
 
-<script>
-const startLoad = performance.now();
-const boxes = [];
-let animId = null; //保存动画ID，方便停止
+    <div class="footnote">
+      点击按钮将跳转到 test 页面
+    </div>
+  </div>
 
-// 预先生成方块DOM
-const container = document.getElementById("boxContainer");
-for(let i=0;i<18;i++){
-    const div = document.createElement("div");
-    div.className="box";
-    container.appendChild(div);
-    boxes.push(div);
-}
+  <script>
+    (function() {
+      // ---------- 浏览器版本检测函数 ----------
+      // 获取浏览器名称和版本（基于 userAgent 解析，简单且通用）
+      function getBrowserInfo() {
+        const ua = navigator.userAgent;
+        let browserName = "未知浏览器";
+        let version = "未知版本";
 
-// 页面加载一次性计算
-let sum = 0;
-for(let i=0;i<150000;i++){
-    sum += Math.sqrt(i);
-}
-document.getElementById("calcResult").innerText = sum.toFixed(2);
+        // 检测顺序很重要，因为很多浏览器 UA 中包含其他浏览器的标识
 
-window.addEventListener("load",()=>{
-    const endLoad = performance.now();
-    const cost = (endLoad - startLoad).toFixed(2);
-    document.getElementById("pageTime").innerText = `${cost} ms`;
-    console.log(`【WebView2测试】页面初始化耗时: ${cost} ms`);
-});
+        // 1. Edge (Chromium 版) – 包含 Edg/ 或 Edge/
+        if (/Edg\/([\d.]+)/.test(ua)) {
+          browserName = "Microsoft Edge";
+          version = ua.match(/Edg\/([\d.]+)/)[1];
+        }
+        // 2. Opera (包含 OPR/ 或 Opera)
+        else if (/OPR\/([\d.]+)/.test(ua) || /Opera\/([\d.]+)/.test(ua)) {
+          browserName = "Opera";
+          const match = ua.match(/OPR\/([\d.]+)/) || ua.match(/Opera\/([\d.]+)/);
+          if (match) version = match[1];
+        }
+        // 3. Firefox (包含 Firefox/ 或 FxiOS)
+        else if (/Firefox\/([\d.]+)/.test(ua) || /FxiOS\/([\d.]+)/.test(ua)) {
+          browserName = "Mozilla Firefox";
+          const match = ua.match(/Firefox\/([\d.]+)/) || ua.match(/FxiOS\/([\d.]+)/);
+          if (match) version = match[1];
+        }
+        // 4. Chrome (包含 Chrome/ 或 CriOS，且排除 Edge/Opera 等已判断过的)
+        else if (/Chrome\/([\d.]+)/.test(ua) || /CriOS\/([\d.]+)/.test(ua)) {
+          // 排除已经识别为 Edge/Opera 的情况（由于前面已经捕获，但加一层保险）
+          if (/Edg\//.test(ua) || /OPR\//.test(ua)) {
+            // 如果仍有漏网之鱼，再判断一次（实际不会）
+            if (/Edg\//.test(ua)) {
+              browserName = "Microsoft Edge";
+              version = ua.match(/Edg\/([\d.]+)/)?.[1] || "未知";
+            } else if (/OPR\//.test(ua)) {
+              browserName = "Opera";
+              version = ua.match(/OPR\/([\d.]+)/)?.[1] || "未知";
+            }
+          } else {
+            browserName = "Google Chrome";
+            const match = ua.match(/Chrome\/([\d.]+)/) || ua.match(/CriOS\/([\d.]+)/);
+            if (match) version = match[1];
+          }
+        }
+        // 5. Safari (包含 Safari/ 且不包含 Chrome/Chromium/Edg/OPR 等)
+        else if (/Safari\/([\d.]+)/.test(ua) && !/Chrome|Chromium|Edg|OPR|CriOS|FxiOS/.test(ua)) {
+          browserName = "Safari";
+          // Safari 的版本号通常从 Version/ 中提取更准确
+          const versionMatch = ua.match(/Version\/([\d.]+)/);
+          if (versionMatch) {
+            version = versionMatch[1];
+          } else {
+            // 后备：从 Safari/ 后面取
+            const safariMatch = ua.match(/Safari\/([\d.]+)/);
+            if (safariMatch) version = safariMatch[1];
+          }
+        }
+        // 6. 其他少见浏览器（如 IE, 旧版 Edge 等）
+        else if (/MSIE ([\d.]+)/.test(ua) || /Trident\/.*rv:([\d.]+)/.test(ua)) {
+          browserName = "Internet Explorer";
+          const match = ua.match(/MSIE ([\d.]+)/) || ua.match(/Trident\/.*rv:([\d.]+)/);
+          if (match) version = match[1];
+        }
+        // 如果没有匹配到，尝试通用的解析：从 UA 中查找类似 "Name/Version" 的结构
+        else {
+          // 最后尝试：匹配 "Word/数字.数字" 这种常见模式
+          const genericMatch = ua.match(/([A-Za-z]+)\/([\d.]+)/);
+          if (genericMatch) {
+            browserName = genericMatch[1];
+            version = genericMatch[2];
+          } else {
+            // 实在无法识别，保留未知，但可能 UA 中有 "Mozilla/5.0" 等
+            const mozillaMatch = ua.match(/Mozilla\/([\d.]+)/);
+            if (mozillaMatch) {
+              browserName = "Mozilla 兼容";
+              version = mozillaMatch[1];
+            }
+          }
+        }
 
-// 动画函数
-let lastTime = 0;
-function animate(time){
-    animId = requestAnimationFrame(animate);
-    const delta = time - lastTime;
-    lastTime = time;
-    const fps = Math.round(1000 / delta);
-    document.getElementById("fps").innerText = fps;
+        // 特殊处理：某些浏览器版本号可能为空，用 '未知' 填充
+        if (!version || version === "") version = "未知版本";
 
-    boxes.forEach((box,idx)=>{
-        const r = Math.floor(120 + 100*Math.sin(time/800 + idx));
-        const g = Math.floor(120 + 100*Math.cos(time/900 + idx));
-        const b = Math.floor(180 + 70*Math.sin(time/1000 + idx));
-        box.style.background = `rgb(${r},${g},${b})`;
-    })
-}
+        return { name: browserName, version: version };
+      }
 
-// 按钮点击事件
-const btn = document.getElementById("startBtn");
-btn.onclick = function(){
-    if(animId){
-        // 如果正在运行，则停止
-        cancelAnimationFrame(animId);
-        animId = null;
-        btn.innerText = "开始压力测试";
-        console.log("动画已暂停");
-    }else{
-        lastTime = performance.now();
-        animId = requestAnimationFrame(animate);
-        btn.innerText = "停止压力测试";
-        console.log("动画启动，开始压测");
-    }
-}
-</script>
+      // 更新页面显示
+      function displayBrowserInfo() {
+        const browserNameEl = document.getElementById('browserName');
+        const browserVersionEl = document.getElementById('browserVersion');
+
+        try {
+          const { name, version } = getBrowserInfo();
+          browserNameEl.textContent = name;
+          // 如果版本号太长，可以适当截断（但通常不会）
+          browserVersionEl.textContent = `v${version}`;
+        } catch (e) {
+          // 万一解析出错，显示回退信息
+          browserNameEl.textContent = '浏览器';
+          browserVersionEl.textContent = '版本信息获取失败';
+          console.warn('浏览器检测出错:', e);
+        }
+      }
+
+      // ---------- 按钮跳转逻辑 ----------
+      function setupButton() {
+        const btn = document.getElementById('startTestBtn');
+        if (btn) {
+          btn.addEventListener('click', function() {
+            // 跳转到 test.html（相对路径，与当前页面同目录）
+            window.location.href = 'test.html';
+          });
+        }
+      }
+
+      // 页面加载完成后执行
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          displayBrowserInfo();
+          setupButton();
+        });
+      } else {
+        // 如果 DOM 已经加载完毕（比如脚本在底部，或者 defer）
+        displayBrowserInfo();
+        setupButton();
+      }
+    })();
+  </script>
 </body>
 </html>
