@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebView2 Performance Test Page</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Microsoft YaHei;padding:24px;background:#f0f4f8;color:#222;}
+.container{max-width:1100px;margin:0 auto;background:#fff;padding:30px;border-radius:12px;box-shadow:0 2px 12px #00000015;}
+h1{color:#1f4e96;margin-bottom:16px;}
+.info{padding:14px;background:#eef5ff;border-left:4px solid #2b7cd3;margin:16px 0;border-radius:4px;}
+table{width:100%;border-collapse:collapse;margin:20px 0;}
+td,th{border:1px solid #ddd;padding:10px;text-align:center;}
+th{background:#e8f0fe;}
+.box-row{display:flex;gap:12px;margin:20px 0;flex-wrap:wrap;}
+.box{width:120px;height:120px;border-radius:8px;transition:0.3s;background:#cccccc;}
+.stats{margin-top:20px;font-size:14px;color:#555;}
+#startBtn{
+    padding:12px 24px;
+    font-size:16px;
+    background:#2b7cd3;
+    color:#fff;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+#startBtn:hover{background:#2068b6;}
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>WebView2 持续动态压力测试页</h1>
+    <div class="info">
+        <p>✅ GitHub Pages 兼容 | 点击按钮启动动画</p>
+        <p>初始化耗时：<span id="pageTime">0</span></p>
+        <p>FPS：<span id="fps">0</span></p>
+    </div>
+
+    <button id="startBtn">开始压力测试</button>
+
+    <table>
+        <tr><th>项目</th><th>数据A</th><th>数据B</th><th>数据C</th></tr>
+        <tr><td>测试项1</td><td>123</td><td>456</td><td>789</td></tr>
+        <tr><td>测试项2</td><td>333</td><td>666</td><td>999</td></tr>
+        <tr><td>测试项3</td><td>111</td><td>222</td><td>555</td></tr>
+    </table>
+
+    <div class="box-row" id="boxContainer"></div>
+
+    <div class="stats">
+        JS计算结果：<span id="calcResult"></span>
+    </div>
+</div>
+
+<script>
+const startLoad = performance.now();
+const boxes = [];
+let animId = null; //保存动画ID，方便停止
+
+// 预先生成方块DOM
+const container = document.getElementById("boxContainer");
+for(let i=0;i<18;i++){
+    const div = document.createElement("div");
+    div.className="box";
+    container.appendChild(div);
+    boxes.push(div);
+}
+
+// 页面加载一次性计算
+let sum = 0;
+for(let i=0;i<150000;i++){
+    sum += Math.sqrt(i);
+}
+document.getElementById("calcResult").innerText = sum.toFixed(2);
+
+window.addEventListener("load",()=>{
+    const endLoad = performance.now();
+    const cost = (endLoad - startLoad).toFixed(2);
+    document.getElementById("pageTime").innerText = `${cost} ms`;
+    console.log(`【WebView2测试】页面初始化耗时: ${cost} ms`);
+});
+
+// 动画函数
+let lastTime = 0;
+function animate(time){
+    animId = requestAnimationFrame(animate);
+    const delta = time - lastTime;
+    lastTime = time;
+    const fps = Math.round(1000 / delta);
+    document.getElementById("fps").innerText = fps;
+
+    boxes.forEach((box,idx)=>{
+        const r = Math.floor(120 + 100*Math.sin(time/800 + idx));
+        const g = Math.floor(120 + 100*Math.cos(time/900 + idx));
+        const b = Math.floor(180 + 70*Math.sin(time/1000 + idx));
+        box.style.background = `rgb(${r},${g},${b})`;
+    })
+}
+
+// 按钮点击事件
+const btn = document.getElementById("startBtn");
+btn.onclick = function(){
+    if(animId){
+        // 如果正在运行，则停止
+        cancelAnimationFrame(animId);
+        animId = null;
+        btn.innerText = "开始压力测试";
+        console.log("动画已暂停");
+    }else{
+        lastTime = performance.now();
+        animId = requestAnimationFrame(animate);
+        btn.innerText = "停止压力测试";
+        console.log("动画启动，开始压测");
+    }
+}
+</script>
+</body>
+</html>
